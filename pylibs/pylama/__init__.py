@@ -1,6 +1,11 @@
-" pylama -- Python code audit. "
+"""
+    Code audit tool for python.
 
-version_info = (0, 3, 2)
+    :copyright: 2013 by Kirill Klenov.
+    :license: BSD, see LICENSE for more details.
+"""
+
+version_info = 1, 3, 0
 
 __version__ = version = '.'.join(map(str, version_info))
 __project__ = __name__

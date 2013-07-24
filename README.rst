@@ -1,5 +1,5 @@
-Python-mode, Python in VIM
-##########################
+|logo| Python-mode, Python in VIM
+#################################
 
 Python-mode is a vim plugin that allows you to use the pylint_, rope_, pydoc_, pyflakes_, pep8_, mccabe_ libraries in vim to provide
 features like python code looking for bugs, refactoring and some other useful things.
@@ -144,6 +144,7 @@ Default values: ::
 
     " Switch pylint, pyflakes, pep8, mccabe code-checkers
     " Can have multiply values "pep8,pyflakes,mcccabe"
+    " Choices are pyflakes, pep8, mccabe, pylint, pep257
     let g:pymode_lint_checker = "pyflakes,pep8,mccabe"
 
     " Skip errors and warnings
@@ -190,7 +191,7 @@ Default values: ::
     let g:pymode_lint_maxheight = 6
 
 
-.. note:: 
+.. note::
     Pylint options (ex. disable messages) may be defined in ``$HOME/pylint.rc``
     See pylint documentation: http://pylint-messages.wikidot.com/all-codes
 
@@ -202,6 +203,9 @@ Default values: ::
 
     " Load rope plugin
     let g:pymode_rope = 1
+
+    " Map keys for autocompletion
+    let g:pymode_rope_autocomplete_map = '<C-Space>'
 
     " Auto create and open ropeproject
     let g:pymode_rope_auto_project = 1
@@ -507,7 +511,7 @@ License
 
 Licensed under a `GNU lesser general public license`_.
 
-If you like this plugin, you can send me postcard :) 
+If you like this plugin, you can send me postcard :)
 My address is here: "Russia, 143401, Krasnogorsk, Shkolnaya 1-19" to "Kirill Klenov".
 **Thanks for support!**
 
@@ -521,3 +525,4 @@ My address is here: "Russia, 143401, Krasnogorsk, Shkolnaya 1-19" to "Kirill Kle
 .. _pathogen: https://github.com/tpope/vim-pathogen
 .. _pep8: http://pypi.python.org/pypi/pep8
 .. _mccabe: http://en.wikipedia.org/wiki/Cyclomatic_complexity
+.. |logo| image:: https://raw.github.com/klen/python-mode/develop/logo.png

@@ -155,14 +155,19 @@ endif
 
 if !pymode#Default("g:pymode_breakpoint", 1) || g:pymode_breakpoint
 
-    if !pymode#Default("g:pymode_breakpoint_cmd", "import ipdb; ipdb.set_trace()  # XXX BREAKPOINT")  && has("python")
+    if !pymode#Default("g:pymode_breakpoint_cmd", "import pdb; pdb.set_trace()  # XXX BREAKPOINT")  && has("python")
+
 python << EOF
 from imp import find_module
-try:
-    find_module('ipdb')
-except ImportError:
-    vim.command('let g:pymode_breakpoint_cmd = "import pdb; pdb.set_trace()  # XXX BREAKPOINT"')
+
+for module in ('pudb', 'ipdb'):
+    try:
+        find_module(module)
+        vim.command('let g:pymode_breakpoint_cmd = "import %s; %s.set_trace()  # XXX BREAKPOINT"' % (module, module))
+    except ImportError:
+        continue
 EOF
+
     endif
 
     " OPTION: g:pymode_breakpoint_key -- string. Key for set/unset breakpoint.
@@ -188,6 +193,10 @@ endif
 " Rope {{{
 
 if !pymode#Default("g:pymode_rope", 1) || g:pymode_rope
+
+    " OPTION: g:pymode_rope_autocomplete_key -- str. Key for the rope
+    " autocompletion.
+    call pymode#Default("g:pymode_rope_autocomplete_map", "<C-Space>")
 
     " OPTION: g:pymode_rope_auto_project -- bool. Auto create ropeproject
     call pymode#Default("g:pymode_rope_auto_project", 1)
@@ -232,9 +241,6 @@ if !pymode#Default("g:pymode_rope", 1) || g:pymode_rope
 
     " OPTION: g:pymode_rope_short_prefix -- string.
     call pymode#Default("g:pymode_rope_short_prefix", "<C-c>")
-
-    " OPTION: g:pymode_rope_map_space -- string.
-    call pymode#Default("g:pymode_rope_map_space", 1)
 
     " OPTION: g:pymode_rope_vim_completion -- bool.
     call pymode#Default("g:pymode_rope_vim_completion", 1)
