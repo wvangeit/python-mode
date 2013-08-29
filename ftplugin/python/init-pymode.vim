@@ -13,7 +13,7 @@ if pymode#Default('g:pymode', 1) || !g:pymode
 endif
 
 " DESC: Check python support
-if !has('python')
+if !has('python') && !has('python3')
     let g:pymode_virtualenv = 0
     let g:pymode_path       = 0
     let g:pymode_lint       = 0
@@ -23,6 +23,11 @@ if !has('python')
     let g:pymode_run        = 0
 endif
 
+if has('python')
+    command! -nargs=1 Python python <args>
+elseif has('python3')
+    command! -nargs=1 Python python3 <args>
+end
 
 " Virtualenv {{{
 
@@ -42,15 +47,7 @@ endif
 if !pymode#Default('g:pymode_path', 1) || g:pymode_path
 
     call pymode#Default('g:pymode_paths', [])
-
-python << EOF
-import sys, vim, os
-
-curpath = vim.eval("getcwd()")
-libpath = os.path.join(vim.eval("expand('<sfile>:p:h:h:h')"), 'pylibs')
-
-sys.path = [libpath, curpath] + vim.eval("g:pymode_paths") + sys.path
-EOF
+    call pymode#path#Activate(expand("<sfile>:p:h:h:h"))
 
 endif " }}}
 
@@ -130,9 +127,9 @@ if !pymode#Default("g:pymode_lint", 1) || g:pymode_lint
         let g:pymode_lint_config = expand("<sfile>:p:h:h:h") . "/pylint.ini"
     endif
 
-    py from pymode import queue
+    Python from pymode import queue
 
-    au VimLeavePre * py queue.stop_queue()
+    au VimLeavePre * Python queue.stop_queue()
 
 endif
 
@@ -157,7 +154,7 @@ if !pymode#Default("g:pymode_breakpoint", 1) || g:pymode_breakpoint
 
     if !pymode#Default("g:pymode_breakpoint_cmd", "import pdb; pdb.set_trace()  # XXX BREAKPOINT")  && has("python")
 
-python << EOF
+Python << EOF
 from imp import find_module
 
 for module in ('pudb', 'ipdb'):
@@ -206,9 +203,6 @@ if !pymode#Default("g:pymode_rope", 1) || g:pymode_rope
     " `.ropeproject` subdirectory.
     call pymode#Default("g:pymode_rope_auto_project_open", 1)
 
-    " OPTION: g:pymode_rope_auto_session_manage -- bool
-    call pymode#Default("g:pymode_rope_auto_session_manage", 0)
-
     " OPTION: g:pymode_rope_enable_autoimport -- bool. Enable autoimport
     call pymode#Default("g:pymode_rope_enable_autoimport", 1)
 
@@ -255,7 +249,7 @@ if !pymode#Default("g:pymode_rope", 1) || g:pymode_rope
     call pymode#Default("g:pymode_rope_always_show_complete_menu", 0)
 
     " DESC: Init Rope
-    py import ropevim
+    Python import ropevim
 
     fun! RopeCodeAssistInsertMode() "{{{
         call RopeCodeAssist()
@@ -266,7 +260,7 @@ if !pymode#Default("g:pymode_rope", 1) || g:pymode_rope
         if isdirectory(getcwd() . '/.ropeproject')
             " In order to pass it the quiet kwarg I need to open the project
             " using python and not vim, which should be no major issue
-            py ropevim._interface.open_project(quiet=True)
+            Python ropevim._interface.open_project(quiet=True)
             return ""
         endif
     endfunction "}}}
@@ -278,7 +272,7 @@ if !pymode#Default("g:pymode_rope", 1) || g:pymode_rope
 
     fun! RopeOmni(findstart, base) "{{{
         if a:findstart
-            py ropevim._interface._find_start()
+            Python ropevim._interface._find_start()
             return g:pymode_offset
         else
             call RopeOmniComplete()
@@ -317,11 +311,6 @@ if !pymode#Default("g:pymode_rope", 1) || g:pymode_rope
     if !pymode#Default("g:pymode_rope_auto_project_open", 1) || g:pymode_rope_auto_project_open
         call RopeOpenExistingProject()
     endif
-
-     if !pymode#Default("g:pymode_rope_auto_session_manage", 0) || g:pymode_rope_auto_session_manage
-        autocmd VimLeave * call RopeSaveSession()
-        autocmd VimEnter * call RopeRestoreSession()
-     endif
 
 endif
 

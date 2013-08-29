@@ -21,7 +21,7 @@ There is no need to install the pylint_, rope_ or any used python library on you
 - Powerful customization
 - And more, more ...
 
-See (very old) screencast here: http://t.co/3b0bzeXA (sorry for quality, this is my first screencast)
+See (very old) screencast here: http://www.youtube.com/watch?v=67OZNp9Z0CQ (sorry for quality, this is my first screencast)
 Another old presentation here: http://www.youtube.com/watch?v=YhqsjUUHj6g
 
 
@@ -165,7 +165,7 @@ Default values: ::
     " Check code every save
     let g:pymode_lint_write = 1
 
-    " Auto open cwindow if errors be finded
+    " Auto open cwindow if errors were found
     let g:pymode_lint_cwindow = 1
 
     " Show error message if cursor placed at the error line

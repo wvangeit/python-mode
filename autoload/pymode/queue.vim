@@ -1,7 +1,8 @@
 fun! pymode#queue#Poll() "{{{
 
     " Check current tasks
-    py queue.check_task()
+    Python from pymode import queue
+    Python queue.check_task()
 
     " Update interval
     if mode() == 'i'

@@ -1,6 +1,6 @@
 runtime ftplugin/python/init-pymode.vim
 
-if pymode#Default('b:pymode', 1)
+if !g:pymode
     finish
 endif
 
@@ -76,7 +76,7 @@ if pymode#Option('lint')
     " DESC: Run queue
     let &l:updatetime = g:pymode_updatetime
     au CursorHold <buffer> call pymode#queue#Poll()
-    au BufLeave <buffer> py queue.stop_queue()
+    au BufLeave <buffer> Python queue.stop_queue()
 
 endif
 

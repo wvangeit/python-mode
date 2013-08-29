@@ -5,12 +5,11 @@ fun! pymode#doc#Show(word) "{{{
     if a:word == ''
         echoerr "No name/symbol under cursor!"
     else
-        py import StringIO
-        py sys.stdout, _ = StringIO.StringIO(), sys.stdout
-        py help(vim.eval('a:word'))
-        py sys.stdout, out = _, sys.stdout.getvalue()
+        Python import StringIO
+        Python sys.stdout, _ = StringIO.StringIO(), sys.stdout
+        Python help(vim.eval('a:word'))
         call pymode#TempBuffer()
-        py vim.current.buffer.append(str(out).split('\n'), 0)
+        Python vim.current.buffer.append(str(out).splitlines(), 0)
         wincmd p
     endif
 endfunction "}}}
