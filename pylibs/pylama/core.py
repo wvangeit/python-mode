@@ -1,5 +1,7 @@
-""" Pylama's core functionality. Prepare params, check a modeline and run the
-    checkers.
+""" Pylama's core functionality.
+
+Prepare params, check a modeline and run the checkers.
+
 """
 import logging
 import re
@@ -11,7 +13,7 @@ from . import utils
 DEFAULT_LINTERS = 'pep8', 'pyflakes', 'mccabe'
 
 #: The skip pattern
-SKIP_PATTERN = '# noqa'
+SKIP_PATTERN = re.compile(r'# *noqa\b', re.I).search
 
 # Parse a modelines
 MODELINE_RE = re.compile(
@@ -32,7 +34,7 @@ def run(path, ignore=None, select=None, linters=DEFAULT_LINTERS, config=None,
     """
     errors = []
     params = dict(ignore=ignore, select=select)
-
+    code = None
     try:
         with open(path, 'rU') as f:
             code = f.read() + '\n\n'
@@ -40,9 +42,6 @@ def run(path, ignore=None, select=None, linters=DEFAULT_LINTERS, config=None,
             params = prepare_params(
                 parse_modeline(code), config, ignore=ignore, select=select
             )
-
-            for line in code.split('\n'):
-                params['skip'].append(line.endswith(SKIP_PATTERN))
 
             if not params['lint']:
                 return errors
@@ -63,26 +62,16 @@ def run(path, ignore=None, select=None, linters=DEFAULT_LINTERS, config=None,
                         'text') or '').strip()
                         .replace("'", "\"").split('\n')[0], lint)
                     e['filename'] = path or ''
-                    try:
-                        if not params['skip'][e['lnum']]:
-                            errors.append(e)
-                    except IndexError:
-                        continue
+                    errors.append(e)
 
     except IOError as e:
         errors.append(dict(
-            lnum=0,
-            type='E',
-            col=0,
-            text=str(e)
-        ))
+            lnum=0, type='E', col=0, text=str(e), filename=path or ''))
 
     except SyntaxError as e:
         errors.append(dict(
-            lnum=e.lineno or 0,
-            type='E',
-            col=e.offset or 0,
-            text=e.args[0] + ' [%s]' % lint
+            lnum=e.lineno or 0, type='E', col=e.offset or 0,
+            text=e.args[0] + ' [%s]' % lint, filename=path or ''
         ))
 
     except Exception:
@@ -90,6 +79,10 @@ def run(path, ignore=None, select=None, linters=DEFAULT_LINTERS, config=None,
         logging.debug(traceback.format_exc())
 
     errors = [er for er in errors if filter_errors(er, **params)]
+
+    if code:
+        errors = filter_skiplines(code, errors)
+
     return sorted(errors, key=lambda x: x['lnum'])
 
 
@@ -125,7 +118,6 @@ def prepare_params(*configs, **params):
 
     params['ignore'] = set(params['ignore'])
     params['select'] = set(params['select'])
-    params['skip'] = [False]
     params.setdefault('lint', 1)
     return params
 
@@ -148,3 +140,24 @@ def filter_errors(e, select=None, ignore=None, **params):
                 return False
 
     return True
+
+
+def filter_skiplines(code, errors):
+    """ Filter lines by `noqa`.
+
+    :return list: A filtered errors
+
+    """
+    if not errors:
+        return errors
+
+    enums = set(er['lnum'] for er in errors)
+    removed = set([
+        num for num, l in enumerate(code.split('\n'), 1)
+        if num in enums and SKIP_PATTERN(l)
+    ])
+
+    if removed:
+        errors = [er for er in errors if not er['lnum'] in removed]
+
+    return errors

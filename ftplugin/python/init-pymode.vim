@@ -2,6 +2,8 @@ if pymode#Default('g:pymode_init', 1)
     finish
 endif
 
+call pymode#Default('g:pymode_test', 0)
+
 let g:pymode_version = "0.6.18"
 
 com! PymodeVersion echomsg "Current python-mode version: " . g:pymode_version
@@ -61,6 +63,9 @@ if !pymode#Default("g:pymode_lint", 1) || g:pymode_lint
 
     " OPTION: g:pymode_lint_write -- bool. Check code every save.
     call pymode#Default("g:pymode_lint_write", 1)
+
+    " OPTION: g:pymode_lint_async -- bool. Run a checkers asynchronously 
+    call pymode#Default("g:pymode_lint_async", 1)
 
     " OPTION: g:pymode_lint_onfly -- bool. Check code every save.
     call pymode#Default("g:pymode_lint_onfly", 0)
@@ -154,16 +159,7 @@ if !pymode#Default("g:pymode_breakpoint", 1) || g:pymode_breakpoint
 
     if !pymode#Default("g:pymode_breakpoint_cmd", "import pdb; pdb.set_trace()  # XXX BREAKPOINT")  && has("python")
 
-Python << EOF
-from imp import find_module
-
-for module in ('pudb', 'ipdb'):
-    try:
-        find_module(module)
-        vim.command('let g:pymode_breakpoint_cmd = "import %s; %s.set_trace()  # XXX BREAKPOINT"' % (module, module))
-    except ImportError:
-        continue
-EOF
+        call pymode#breakpoint#SearchDebuger()
 
     endif
 
