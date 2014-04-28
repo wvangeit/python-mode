@@ -17,7 +17,7 @@ def auto():
         experimental = True
         ignore = vim.eval('g:pymode_lint_ignore')
         in_place = True
-        indent_size = int(vim.eval('&tabstop'))
+        indent_size = 4 # int(vim.eval('&tabstop'))
         line_range = None
         max_line_length = 79
         pep8_passes = 100
