@@ -8,7 +8,6 @@ import vim  # noqa
 
 def auto():
     """ Fix PEP8 erorrs in current buffer. """
-
     from .autopep8 import fix_file
 
     class Options(object):
@@ -30,11 +29,7 @@ def auto():
 
 def get_documentation():
     """ Search documentation and append to current buffer. """
-
-    try:
-        from StringIO import StringIO
-    except ImportError:
-        from io import StringIO
+    from ._compat import StringIO
 
     sys.stdout, _ = StringIO(), sys.stdout
     help(vim.eval('a:word'))

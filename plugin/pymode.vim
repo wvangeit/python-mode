@@ -1,5 +1,5 @@
 " vi: fdl=1 
-let g:pymode_version = "0.7.8b"
+let g:pymode_version = "0.8.1"
 
 com! PymodeVersion echomsg "Current python-mode version: " . g:pymode_version
 com! PymodeTroubleshooting call pymode#troubleshooting#test()
@@ -47,6 +47,7 @@ call pymode#default("g:pymode_trim_whitespaces", 1)
 
 " Set recomended python options
 call pymode#default("g:pymode_options", 1)
+call pymode#default("g:pymode_options_max_line_length", 80)
 
 " Minimal height of pymode quickfix window
 call pymode#default('g:pymode_quickfix_maxheight', 6)
@@ -127,6 +128,20 @@ call pymode#default("g:pymode_lint_error_symbol", "EE")
 call pymode#default("g:pymode_lint_info_symbol", "II")
 call pymode#default("g:pymode_lint_pyflakes_symbol", "FF")
 
+" Code checkers options
+call pymode#default("g:pymode_lint_options_pep8",
+    \ {'max_line_length': g:pymode_options_max_line_length})
+
+call pymode#default("g:pymode_lint_options_pylint",
+    \ {'max-line-length': g:pymode_options_max_line_length})
+
+call pymode#default("g:pymode_lint_options_mccabe",
+    \ {'complexity': 12})
+
+call pymode#default("g:pymode_lint_options_pep257", {})
+call pymode#default("g:pymode_lint_options_pyflakes", { 'builtins': '_' })
+
+
 " }}}
 
 " SET/UNSET BREAKPOINTS {{{
@@ -151,8 +166,14 @@ call pymode#default('g:pymode_rope', 1)
 " System plugin variable
 call pymode#default('g:pymode_rope_current', '')
 
+" Configurable rope project root
+call pymode#default('g:pymode_rope_project_root', '')
+
+" Configurable rope project folder (always relative to project root)
+call pymode#default('g:pymode_rope_ropefolder', '.ropeproject') 
+
 " If project hasnt been finded in current working directory, look at parents directory
-call pymode#default('g:pymode_rope_lookup_project', 1)
+call pymode#default('g:pymode_rope_lookup_project', 0)
 
 " Enable Rope completion
 call pymode#default('g:pymode_rope_completion', 1)
